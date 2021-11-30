@@ -22,6 +22,8 @@ public class Jogo extends ApplicationAdapter {
 	private float larguraDispositivos;
 	private float alturaDispositivo;
 	private float variacao = 0;
+	private float gravidade = 0;
+	private float posicaoInicialVertical = 0;
 
 	@Override
 	public void create () {
@@ -35,6 +37,7 @@ public class Jogo extends ApplicationAdapter {
 
 		larguraDispositivos = Gdx.graphics.getWidth();
 		alturaDispositivo = Gdx.graphics.getHeight();
+		posicaoInicialVertical = alturaDispositivo / 2;
 	}
 
 	@Override
@@ -45,10 +48,22 @@ public class Jogo extends ApplicationAdapter {
 		if (variacao > 3)//reseta o valor da variação para limitar apenas as 3 imagens do array de passaros
 			variacao = 0;
 
+		//Aplicar eventos de click
+		boolean toqueTela = Gdx.input.justTouched();
+		if (toqueTela){
+			gravidade = -25;
+		}
+
+		//Aplicar gravidade no pássaro
+		if (posicaoInicialVertical > 0 || toqueTela )
+			posicaoInicialVertical = posicaoInicialVertical - gravidade;
+
 		batch.draw(fundo, 0, 0, larguraDispositivos , alturaDispositivo );//parametros passado = 1 imagen, 2 eixo x, 3 eixo y, 4 altura, 5 largura
-		batch.draw(passaros.get((int) variacao), 30, alturaDispositivo / 2);
+		batch.draw(passaros.get((int) variacao), 30, posicaoInicialVertical);
 
 		variacao += Gdx.graphics.getDeltaTime() * 10;
+
+		gravidade++;
 		movimentoX++;
 		movimentoY++;
 		batch.end();//fim
