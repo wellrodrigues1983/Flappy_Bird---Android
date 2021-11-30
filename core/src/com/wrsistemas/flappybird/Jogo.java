@@ -8,9 +8,15 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Jogo extends ApplicationAdapter {
 
-	/*private int contador = 0;*/
+	private int movimentoX = 0;
+	private int movimentoY = 0;
 	private SpriteBatch batch;
 	private Texture passaro;
+	private Texture fundo;
+
+	//Atributos de configuração
+	private float larguraDispositivos;
+	private float alturaDispositivo;
 
 	@Override
 	public void create () {
@@ -18,6 +24,10 @@ public class Jogo extends ApplicationAdapter {
 
 		batch = new SpriteBatch();
 		passaro = new Texture("passaro1.png");
+		fundo = new Texture("fundo.png");
+
+		larguraDispositivos = Gdx.graphics.getWidth();
+		alturaDispositivo = Gdx.graphics.getHeight();
 	}
 
 	@Override
@@ -25,11 +35,15 @@ public class Jogo extends ApplicationAdapter {
 		/*contador++;
 		Gdx.app.log("render", "jogo renderizado: " + contador);*/
 
-		batch.begin();
+		batch.begin();//inicio
 
-		batch.draw(passaro, 300, 500);
 
-		batch.end();
+		batch.draw(fundo, 0, 0, larguraDispositivos , alturaDispositivo );//parametros passado = 1 imagen, 2 eixo x, 3 eixo y, 4 altura, 5 largura
+		batch.draw(passaro, movimentoX, 500);
+
+		movimentoX++;
+		movimentoY++;
+		batch.end();//fim
 	}
 	
 	@Override
