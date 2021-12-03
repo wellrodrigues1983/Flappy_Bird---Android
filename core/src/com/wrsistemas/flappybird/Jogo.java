@@ -2,7 +2,9 @@ package com.wrsistemas.flappybird;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -30,6 +32,14 @@ public class Jogo extends ApplicationAdapter {
 	private float posicaoCanoVertical;
 	private float espacoEntreCanos;
 	private Random random;
+	private int pontos = 0;
+	private boolean passouCano = false;
+
+	//Exibição de textos
+	BitmapFont textoPontuacao;
+
+
+
 
 	@Override
 	public void create () {
@@ -41,6 +51,7 @@ public class Jogo extends ApplicationAdapter {
 	public void render () {
 
 		verificarEstadodoJogo();
+		validarPontos();
 		desenharTexturas();
 
 	}
@@ -52,6 +63,7 @@ public class Jogo extends ApplicationAdapter {
 		if (posicaoCanoHorizontal < -canoTopo.getWidth() ){
 			posicaoCanoHorizontal = larguraDispositivos;
 			posicaoCanoVertical = random.nextInt(400) -200; //variação de espaços dos canos para subir ou descer
+			passouCano = false;
 		}
 
 
@@ -81,11 +93,13 @@ public class Jogo extends ApplicationAdapter {
 		batch.begin();//inicio
 
 		batch.draw(fundo, 0, 0, larguraDispositivos , alturaDispositivo );//parametros passado = 1 imagen, 2 eixo x, 3 eixo y, 4 altura, 5 largura
-		batch.draw(passaros.get((int) variacao), 30, posicaoInicialVertical);
+		batch.draw(passaros.get((int) variacao), 50, posicaoInicialVertical);
 
 		//posiçãoCanoHorizontal
 		batch.draw(canoBaixo, posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos/2 + posicaoCanoVertical);
 		batch.draw(canoTopo, posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 + posicaoCanoVertical);
+
+		textoPontuacao.draw(batch, String.valueOf(pontos), larguraDispositivos/2, alturaDispositivo - 110);
 
 		batch.end();//fim
 
@@ -102,6 +116,17 @@ public class Jogo extends ApplicationAdapter {
 		canoTopo = new Texture("cano_topo_maior.png");
 	}
 
+	public void validarPontos(){
+
+		if (posicaoCanoHorizontal < 50-passaros.get(0).getWidth()){//Passou da posição do passaro
+			if (!passouCano){
+				pontos++;
+				passouCano = true;
+			}
+
+		}
+	}
+
 	private void inicializarObjetos(){
 
 		batch = new SpriteBatch();
@@ -112,6 +137,11 @@ public class Jogo extends ApplicationAdapter {
 		posicaoInicialVertical = alturaDispositivo / 2;
 		posicaoCanoHorizontal = larguraDispositivos;
 		espacoEntreCanos = 150;
+
+		//Configurações dos textos
+		textoPontuacao = new BitmapFont();
+		textoPontuacao.setColor(Color.WHITE);
+		textoPontuacao.getData().setScale(10);
 	}
 	
 	@Override
