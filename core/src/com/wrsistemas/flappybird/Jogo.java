@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Jogo extends ApplicationAdapter {
 
@@ -26,7 +27,9 @@ public class Jogo extends ApplicationAdapter {
 	private float gravidade = 0;
 	private float posicaoInicialVertical = 0;
 	private float posicaoCanoHorizontal;
+	private float posicaoCanoVertical;
 	private float espacoEntreCanos;
+	private Random random;
 
 	@Override
 	public void create () {
@@ -43,6 +46,13 @@ public class Jogo extends ApplicationAdapter {
 	}
 
 	private void verificarEstadodoJogo(){
+
+		//Movimentar Cano
+		posicaoCanoHorizontal -= Gdx.graphics.getDeltaTime() * 200;
+		if (posicaoCanoHorizontal < -canoTopo.getWidth() ){
+			posicaoCanoHorizontal = larguraDispositivos;
+			posicaoCanoVertical = random.nextInt(400) -200; //variação de espaços dos canos para subir ou descer
+		}
 
 
 
@@ -72,8 +82,10 @@ public class Jogo extends ApplicationAdapter {
 
 		batch.draw(fundo, 0, 0, larguraDispositivos , alturaDispositivo );//parametros passado = 1 imagen, 2 eixo x, 3 eixo y, 4 altura, 5 largura
 		batch.draw(passaros.get((int) variacao), 30, posicaoInicialVertical);
-		batch.draw(canoBaixo, posicaoCanoHorizontal - 100, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos/2);
-		batch.draw(canoTopo, posicaoCanoHorizontal -100, alturaDispositivo / 2 + espacoEntreCanos / 2);
+
+		//posiçãoCanoHorizontal
+		batch.draw(canoBaixo, posicaoCanoHorizontal, alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos/2 + posicaoCanoVertical);
+		batch.draw(canoTopo, posicaoCanoHorizontal, alturaDispositivo / 2 + espacoEntreCanos / 2 + posicaoCanoVertical);
 
 		batch.end();//fim
 
@@ -93,6 +105,7 @@ public class Jogo extends ApplicationAdapter {
 	private void inicializarObjetos(){
 
 		batch = new SpriteBatch();
+		random = new Random();
 
 		larguraDispositivos = Gdx.graphics.getWidth();
 		alturaDispositivo = Gdx.graphics.getHeight();
