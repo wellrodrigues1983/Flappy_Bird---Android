@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +16,8 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +69,12 @@ public class Jogo extends ApplicationAdapter {
 	//Objeto salvar pontuação
 	Preferences preferencias;
 
+	//Objetos para Câmera
+	private OrthographicCamera camera;
+	private Viewport viewport;
+	private final float VIRTUAL_WIDTH = 720;
+	private final float VIRTUAL_HEIGHT = 1280;
+
 
 	@Override
 	public void create () {
@@ -74,6 +84,9 @@ public class Jogo extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+
+		//Limpar frames anteriores
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		verificarEstadodoJogo();
 		validarPontos();
@@ -188,6 +201,8 @@ public class Jogo extends ApplicationAdapter {
 
 	private void desenharTexturas(){
 
+		batch.setProjectionMatrix(camera.combined);
+
 		batch.begin();//inicio
 
 		batch.draw(fundo, 0, 0, larguraDispositivos , alturaDispositivo );//parametros passado = 1 imagen, 2 eixo x, 3 eixo y, 4 altura, 5 largura
@@ -244,8 +259,8 @@ public class Jogo extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		random = new Random();
 
-		larguraDispositivos = Gdx.graphics.getWidth();
-		alturaDispositivo = Gdx.graphics.getHeight();
+		larguraDispositivos = VIRTUAL_WIDTH;
+		alturaDispositivo = VIRTUAL_HEIGHT;
 		posicaoInicialVertical = alturaDispositivo / 2;
 		posicaoCanoHorizontal = larguraDispositivos;
 		espacoEntreCanos = 350; //Aqui define o espaço entre canos
@@ -278,9 +293,19 @@ public class Jogo extends ApplicationAdapter {
 		preferencias = Gdx.app.getPreferences("flappyBird");
 		pontuacaoMaxima = preferencias.getInteger("pontuacaomaxima", 0);
 
+		//Configuração da camera
+		camera = new OrthographicCamera();
+		camera.position.set(VIRTUAL_WIDTH/2, VIRTUAL_HEIGHT/2, 0);
+		viewport = new StretchViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+
 
 	}
-	
+
+	@Override
+	public void resize(int width, int height) {
+		viewport.update(width, height);
+	}
+
 	@Override
 	public void dispose () {
 
